@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#
+# git-lola: concise commit graph of all refs.
+# Mirrors: git log --graph --oneline --all
+# Extra CLI args are forwarded to git log.
+exec git log --graph --oneline --all "$@"

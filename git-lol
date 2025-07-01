@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# git-lol: concise commit graph.
+# Equivalent to `git log --graph --oneline`.
+# Extra arguments are forwarded to `git log`.
+
+exec git log --graph --oneline "$@"

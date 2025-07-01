@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+# git-lg2: verbose, multi-line commit graph view.
+#
+# Mirrors the original alias:
+#   git log --graph --abbrev-commit --decorate \
+#     --format="%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)"
+#
+# Extra arguments passed to this sub-command are forwarded to `git log`.
+#
+exec git log \
+  --graph \
+  --abbrev-commit \
+  --decorate \
+  --format="%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)" \
+  "$@"

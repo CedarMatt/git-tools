@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# git-lsbr  —  “List branches, recent”
+#
+# Shows local branches ordered by most-recent commit, together with the
+# relative commit date and first line of the commit message, formatted
+# into neat columns.  Output is piped to the user’s $PAGER (defaults to
+# `less`) so you can scroll comfortably.
+#
+# Usage:
+#   git lsbr            # show list (same as original alias)
+#   git lsbr --no-pager # bypass the pager
+#
+# Any extra arguments after -- are forwarded to `git for-each-ref`.
+set -euo pipefail
+
+# Allow `--no-pager` to disable paging.
+PAGER_CMD="${PAGER:-less}"
+if [[ ${1:-} == "--no-pager" ]]; then
+  PAGER_CMD=cat
+  shift
+fi
+
+git for-each-ref \
+  --sort=-committerdate \
+  --format='%(refname:short)|%(committerdate:relative)|%(subject)' \
+  refs/heads/ "$@" |
+while IFS='|' read -r branch date subject; do
+  branch=$(printf '%.30s' "$branch")
+  printf '%-30s | %-17s | %.60s\n' "$branch" "$date" "$subject"
+done | "$PAGER_CMD"

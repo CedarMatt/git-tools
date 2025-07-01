@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# git-lg1: detailed yet compact commit graph across all refs.
+# Mirrors the following alias:
+#   git log --graph --abbrev-commit --decorate \
+#     --format="%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)" \
+#     --all
+#
+# Any additional flags given on the command line are forwarded to `git log`.
+
+exec git log \
+  --graph \
+  --abbrev-commit \
+  --decorate \
+  --format="%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)" \
+  --all \
+  "$@"
