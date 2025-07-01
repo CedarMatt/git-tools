@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# git-unwip — remove the latest "wip" snapshot
+#
+# If the most recent commit message is exactly "wip", resets HEAD to the
+# previous commit while preserving changes in the working tree/index.
+#
+# Usage: git unwip
+#
+set -euo pipefail
+
+# Verify we are in a Git repository.
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
+  echo "git-unwip: not a git repository" >&2
+  exit 1
+fi
+
+# Ensure there is at least one commit.
+if ! git rev-parse --verify HEAD >/dev/null 2>&1; then
+  echo "git-unwip: repository has no commits" >&2
+  exit 1
+fi
+
+# Fetch last commit message.
+last_msg=$(git log -1 --pretty=%B | awk '{$1=$1;print}')
+
+if [[ "$last_msg" == "wip" ]]; then
+  # Undo the WIP commit but keep changes.
+  git reset HEAD~
+else
+  echo "git-unwip: last commit is not 'wip'; nothing to do." >&2
+fi

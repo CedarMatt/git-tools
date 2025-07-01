@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+#
+# git-wip  —  quick “work-in-progress” snapshot
+#
+# Usage:  git wip
+#
+# Behaviour:
+#   • If the most recent commit message equals exactly "wip", stage all
+#     changes and amend that commit (so history stays tidy).
+#   • Otherwise, stage all changes and create a new commit with message
+#     "wip".
+#
+# All commits are made with --no-verify to bypass hooks, mirroring the
+# original alias behaviour.
+#
+set -euo pipefail
+
+# Ensure we are inside a Git repository.
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
+  echo "git-wip: not a git repository" >&2
+  exit 1
+fi
+
+# Check whether any commit exists yet.
+if git rev-parse --verify HEAD >/dev/null 2>&1; then
+  # Obtain the last commit message, stripped of leading/trailing space
+  last_msg=$(git log -1 --pretty=%B | awk '{$1=$1;print}')
+else
+  # No commits yet.
+  last_msg=""
+fi
+
+# Always stage latest changes.
+git add .
+
+if [[ "$last_msg" == "wip" ]]; then
+  # Amend the existing WIP commit.
+  git commit -a -m wip --amend --no-verify --quiet
+else
+  # Create a new WIP commit.
+  git commit -a -m wip --no-verify --quiet
+fi
