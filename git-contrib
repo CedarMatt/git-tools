@@ -1,0 +1,32 @@
+#!/bin/sh
+
+git blame --line-porcelain "$@" \
+| awk '
+  BEGIN {
+    gnu = (system("date -d @0 +%Y-%m-%d >/dev/null 2>&1")==0)
+  }
+  /^author / {
+    a=$0; sub(/^author /,"",a); author=a
+  }
+  /^author-time / {
+    time=$2
+  }
+  /^\t/ {
+    count[author]++; total++
+    if (time > last[author]) last[author]=time
+  }
+  END {
+    for (a in count) {
+      pct = count[a]/total*100
+      if (gnu) cmd = "date -d @" last[a] " +%Y-%m-%d"
+      else     cmd = "date -r "  last[a] " +%Y-%m-%d"
+      cmd | getline date_str; close(cmd)
+      printf "%.2f,%s,%s\n", pct, a, date_str
+    }
+  }' \
+| sort -nr \
+| {
+  echo "Contrib,Author,Last Commit"
+  cat
+  } \
+| tabulate -1 -s ','
